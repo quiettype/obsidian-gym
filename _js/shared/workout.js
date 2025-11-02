@@ -46,13 +46,9 @@ class workout {
         const exerciseIds = metadata.frontmatter.exercises || [];
         const workoutId = metadata.frontmatter.id;
 
-        // Debug: Log all #exercise pages for this workout
-        const allExercisePages = context.dv.pages("#exercise").where(e => e.workout_id === workoutId).array();
-        console.log('All #exercise pages for workoutId', workoutId, allExercisePages);
         // Hide remaining exercises if workout has ended
         const hasEndedArr = context.dv.pages("#exercise")
             .where(e => e.workout_id === workoutId && e.exercise === 'Workout end').array();
-        console.log('Workout end entries found:', hasEndedArr);
         const hasEnded = hasEndedArr.length > 0;
         if (hasEnded) {
             context.container.createEl("p", { text: "Workout ended. No exercises remaining!" });
@@ -153,8 +149,7 @@ class workout {
             .where(e => e.workout_id === metadata.frontmatter.id)
             .sort(e => e.date);
 
-        // Debug: Log all performed exercises
-        console.log('Performed exercises for workout', metadata.frontmatter.id, performed.array ? performed.array() : performed);
+
 
         if (performed.length === 0) {
             context.container.createEl("p", { text: "No exercises performed yet" });
@@ -167,8 +162,8 @@ class workout {
             const reps = !isTimed ? (e.reps || "~") : null;
             const weight = e.weight ? `${e.weight} kg` : "~";
             const volume = isTimed
-                ? (e.weight && duration ? `${e.weight * duration} sec×kg` : "~")
-                : (e.weight && e.reps ? `${e.weight * e.reps} kg×reps` : "~");
+                ? (e.weight && duration ? `${(e.weight * duration).toFixed(1)} sec×kg` : "~")
+                : (e.weight && e.reps ? `${(e.weight * e.reps).toFixed(1)} kg×reps` : "~");
             return [
                 (e.exercise === "Workout start" || e.exercise === "Workout end") ? e.exercise : `[[${e.exercise}]]`,
                 weight,
@@ -251,9 +246,6 @@ class workout {
             .where(e => e.workout_id === metadata.frontmatter.id)
             .sort(e => e.time || e.date);
 
-        // Debug: Log all performed exercises and workout end time
-        console.log('EffortChart performed:', performed.array ? performed.array() : performed);
-
         if (performed.length === 0) return;
 
         // Find workout start and end times
@@ -261,7 +253,6 @@ class workout {
         const endLog = performed.find(e => e.exercise === "Workout end");
         const workoutStartTime = startLog ? (startLog.time ? `${metadata.frontmatter.date}T${startLog.time}` : startLog.date) : null;
         const workoutEndTime = endLog ? (endLog.time ? `${metadata.frontmatter.date}T${endLog.time}` : endLog.date) : null;
-        console.log('workoutStartTime:', workoutStartTime, 'workoutEndTime:', workoutEndTime);
 
         // Group exercises by their name/type (excluding start/end)
         const exerciseGroups = {};

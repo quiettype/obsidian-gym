@@ -11,7 +11,7 @@ function filterFiles(filter, files) {
 
 module.exports = async function listFiles(params) {
     try {
-        console.log("Script: Create exercise.");
+
         
         if (!params?.obsidian) {
             throw new Error("Missing required parameters");
@@ -58,9 +58,10 @@ module.exports = async function listFiles(params) {
         // Count performed exercises 
         const performedEx = allFiles.filter(file => {
             const cache = app.metadataCache.getFileCache(file);
-            const tags = obsidian.getAllTags(cache);
-            return (tags?.includes('#exercise') || tags?.includes('#start')) && 
-                   cache?.frontmatter?.workout_id === workout_id;
+            const tags = obsidian.getAllTags(cache).map(tag => tag.replace('#', '')); // Remove # from tags
+            const hasRequiredTag = tags.includes('exercise') || tags.includes('start');
+            const hasMatchingWorkoutId = cache?.frontmatter?.workout_id === workout_id;
+            return hasRequiredTag && hasMatchingWorkoutId;
         });
         let performedExerciseCount = performedEx.length;
 
@@ -83,31 +84,34 @@ module.exports = async function listFiles(params) {
 
         // If no exercises have been performed, add "Start"
         if (performedExerciseCount === 0) {
-            console.log("No exercises performed yet, looking for Start template...");
-            
             // Look specifically for the Start template in the Templates root
             const startTemplate = app.vault.getAbstractFileByPath('Templates/Start.md');
             if (startTemplate) {
-                console.log("Found Start template, adding to exercise list");
                 exercises.push(startTemplate);
-            } else {
-                console.log("No Start template found in Templates/Start.md");
             }
         } else {
             // Get all exercises for this workout that aren't completed
-            console.log("Finding incomplete exercises for workout...");
+
             const workoutEx = allFiles.filter(file => {
-                if (!file.path.startsWith('Templates/exercises/')) return false;
+                if (!file.path.startsWith('Templates/exercises/')) {
+                    return false;
+                }
                 
                 const cache = app.metadataCache.getFileCache(file);
-                const tags = obsidian.getAllTags(cache);
+                const tags = obsidian.getAllTags(cache).map(tag => tag.replace('#', ''));
                 const fm = cache?.frontmatter;
                 
-                return tags?.includes('#exercise') && 
-                       !fm?.workout_id && 
-                       fm?.id && 
-                       exerciseIds?.includes(fm.id) &&
-                       !isExerciseCompleted(fm.id);
+                const hasExerciseTag = tags?.includes('exercise');
+                const noWorkoutId = !fm?.workout_id;
+                const hasId = Boolean(fm?.id);
+                const idInList = exerciseIds?.includes(fm?.id);
+                const notCompleted = !isExerciseCompleted(fm?.id);
+                
+                return hasExerciseTag && 
+                       noWorkoutId && 
+                       hasId && 
+                       idInList && 
+                       notCompleted;
             });
 
             exercises.push(...workoutEx);
@@ -124,7 +128,7 @@ module.exports = async function listFiles(params) {
         if (performedExerciseCount > 0) {
             // Add custom at bottom
             const custom = filterFiles((fm, tags) => {
-                return tags?.includes('#custom') && !fm?.workout_id;
+                return tags?.includes('custom') && !fm?.workout_id;
             }, allFiles);
             if (custom[0]) {
                 sortedExercises.push(custom[0]);
@@ -138,7 +142,7 @@ module.exports = async function listFiles(params) {
         }
 
         if (sortedExercises.length === 0) {
-            console.log("No exercises available to log");
+
             params.variables = { notePath: "" };
             return;
         }
@@ -161,7 +165,7 @@ module.exports = async function listFiles(params) {
         );
 
         if (!notesDisplay) {
-            console.log("Exercise selection cancelled");
+
             params.variables = { notePath: "" };
             return;
         }
@@ -190,7 +194,7 @@ module.exports = async function listFiles(params) {
                 false
             );
             if (!newNote) {
-                console.log("End note creation cancelled");
+
                 params.variables = { notePath: "" };
                 return;
             }
@@ -208,7 +212,7 @@ module.exports = async function listFiles(params) {
         if (notesDisplay.basename === 'Show all exercises') {
             // Show all non-completed exercises
             const allExercises = filterFiles((fm, tags) => {
-                return tags?.includes("#exercise") && 
+                return tags?.includes("exercise") && 
                        !fm?.workout_id && 
                        (!fm?.id || !isExerciseCompleted(fm.id));
             }, allFiles);
@@ -227,7 +231,7 @@ module.exports = async function listFiles(params) {
             );
 
             if (!notesDisplay) {
-                console.log("Exercise selection cancelled from all exercises view");
+
                 params.variables = { notePath: "" };
                 return;
             }
@@ -260,7 +264,7 @@ module.exports = async function listFiles(params) {
             );
 
             if (!newNote) {
-                console.log("Note creation cancelled");
+
                 params.variables = { notePath: "" };
                 return;
             }
@@ -273,17 +277,13 @@ module.exports = async function listFiles(params) {
             params.variables = { notePath: newNote.path };
 
         } catch (error) {
-            console.log("Exercise log creation cancelled:", error.message);
+
             params.variables = { notePath: "" };
             return;
         }
 
     } catch (error) {
-        if (error.message.includes("No workout ID found")) {
-            console.log("No workout ID found in active file");
-        } else {
-            console.error("Error in listFiles function:", error);
-        }
+        console.error("Error in listFiles function:", error);
         params.variables = { notePath: "" };
         return;
     }
