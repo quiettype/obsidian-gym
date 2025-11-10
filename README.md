@@ -73,7 +73,7 @@ An advanced workout tracking system for [Obsidian](https://obsidian.md/), based 
 - [x] fix chart logic in workout routine
 - [x] fix chart on exercise, x-axis should be time and date, not just date.
 - [ ] ~~add relation between equipment and place for better exercises selection~~
-- [ ] add muscle-group or exercises dashboard
+- [x] add muscle-group or exercises dashboard. Used Bases.
 - [ ] add demo video
 - [ ] if possible, add full body visualization of each exercises done and soreness/muscle area (simulate rest periods and recovery)
 - [ ] hide properties is default on notes inside workouts folder
@@ -91,6 +91,6 @@ Workout program not needed as is just meant for simple logging/tracking system.
 This project is open source and available under the MIT License.
 
 ## Acknowledgments
-
+- Updated gym log: https://github.com/Ni-zav/obsidian-gym/ by Ni-zav.
 - Original [obsidian-gym-log](https://github.com/martinjo/obsidian-gym-log) by martinjo
 - Obsidian Community for various plugins
