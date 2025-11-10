@@ -1,4 +1,6 @@
 # Enhanced Obsidian Gym Log
+Original: EOGL: https://github.com/Ni-zav/obsidian-gym/
+My Fork: https://github.com/quiettype/obsidian-gym
 
 An advanced workout tracking system for [Obsidian](https://obsidian.md/), based on and inspired by [martinjo's obsidian-gym-log](https://github.com/martinjo/obsidian-gym-log) with significant enhancements and improvements.
 
