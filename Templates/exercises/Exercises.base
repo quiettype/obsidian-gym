@@ -1,0 +1,28 @@
+filters:
+  and:
+    - file.folder != "js"
+    - file.path.startsWith("Templates/exercises")
+    - file.folder != "Templates/exercises/_library"
+    - file.ext != "base"
+views:
+  - type: table
+    name: Table
+    filters:
+      and:
+        - file.name != ".js"
+    order:
+      - file.name
+      - equipment
+      - muscle_group
+      - video_url
+      - duration
+      - instructions
+      - note.note
+      - timed
+    sort:
+      - property: muscle_group
+        direction: ASC
+      - property: duration
+        direction: ASC
+      - property: file.path
+        direction: ASC

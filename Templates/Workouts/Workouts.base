@@ -1,0 +1,11 @@
+filters:
+  and:
+    - file.path.startsWith("Templates/Workouts")
+    - file.ext != "base"
+views:
+  - type: table
+    name: Table
+    order:
+      - file.name
+      - workout_place
+      - workout_type

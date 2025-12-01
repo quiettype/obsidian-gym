@@ -1,4 +1,4 @@
-| [[Exercise Dashboard]] | [[Workout Dashboard]] | 
+| [[Exercises.base|Exercises]] | [[Workouts.base|Workouts]] | 
 ***
 If you haven't add any exercise, start here to add some exercises:
 ```meta-bind-button
@@ -111,6 +111,7 @@ for (let page of dv.pages('#workout'))
 
 renderHeatmapCalendar(this.container, calendarData)
 ```
+
 ```dataviewjs
 dv.span("** 😊 Workouts  😥**") /* optional ⏹️💤⚡⚠🧩↑↓⏳📔💾📁📝🔄📝🔀⌨️🕸️📅🔍✨ */
 const calendarData = {
